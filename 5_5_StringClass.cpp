@@ -24,16 +24,21 @@ public:
 	MyString(const MyString& origin);		// 복사 생성
 	~MyString();
 	
-	int GetLen() const;						// 문자열 길이 반환
-	void Concat(const char* str);			// Concatenation
-	int GetSubstr(const char* substr) const;// 문자열 내 포함된 문자열 반환
-	bool IsEqual(const char* compare) const;// 문자열 같은지 비교
-	int CmpSize(const char* compare) const;	// 문자열 크기 비교 (사전 순)
+	int GetLen() const;							// 문자열 길이 반환
 
 	void Concat(const MyString& str);			// Concatenation
+	void Concat(const char* str);
+
 	int GetSubstr(int find_from, const MyString& substr) const;// 문자열 내 포함된 문자열 반환
+	int GetSubstr(int find_from, const char* substr) const;
+	int GetSubstr(const MyString& substr) const;
+	int GetSubstr(const char* substr) const;
+
 	bool IsEqual(const MyString& compare) const;// 문자열 같은지 비교
+	bool IsEqual(const char* compare) const;
+
 	int CmpSize(const MyString& compare) const;	// 문자열 크기 비교 (사전 순)
+	int CmpSize(const char* compare) const;
 
 	void PrintStr() const;					// print
 	void PrintStr(int idx) const;			// print from idx
@@ -96,115 +101,6 @@ int MyString::GetLen() const					// 문자열 길이 반환
 	return len;
 }
 
-void MyString::Concat(const char* str)			// Concatenation
-{
-	if (str == nullptr)
-	{
-		printf("Concat 비정상: nullptr\n");
-		return;
-	}
-	if (str[0] == '\0')
-	{
-		printf("Concat 비정상: 붙일 문자열 존재 X\n");
-		return;
-	}
-	int addlen = GetStrLen(str);
-	mem_capacity = len + addlen;
-	char* temp = data;
-	data = new char[mem_capacity];
-	for (int i = 0; i < len; ++i)
-	{
-		data[i] = temp[i];
-	}
-	for (int j = 0; j < addlen; ++j)
-	{
-		data[len + j] = str[j];
-	}
-	len += addlen;
-	if (temp)
-	{
-		delete[] temp;
-	}
-}
-
-int MyString::GetSubstr(const char* substr) const// 문자열 내 포함된 문자열 반환
-{
-	/*if (substr == nullptr)
-	{
-		printf("GetSubstr 비정상\n");
-		return -1;
-	}*/
-	if (substr[0] == '\0')
-	{
-		printf("GetSubstr 비정상: 검색 문자열 존재 X\n");
-		return -1;
-	}
-	int substrlen = GetStrLen(substr);
-	int psubstr = -1;
-	for (int i = 0; i < len; ++i)
-	{
-		if (data[i] != substr[0])
-		{
-			continue;
-		}
-		psubstr = i;
-		for (int j = 0; j < substrlen; ++j)
-		{
-			if (i + j >= len)
-			{
-				return -1;
-			}
-
-			if (data[i + j] != substr[j])
-			{
-				psubstr = -1;
-				break;
-			}
-		}
-		if (psubstr != -1)
-		{
-			return psubstr;
-		}
-	}
-	return -1;
-}
-
-bool MyString::IsEqual(const char* compare) const// 문자열 같은지 비교
-{
-	for (int i = 0; i < len; ++i)
-	{
-		if ((compare[i] == '\0' && len != 0) || data[i] != compare[i])
-		{
-			return false;
-		}
-	}
-	if (compare[len] != '\0')
-	{
-		return false;
-	}
-	return true;
-}
-
-int MyString::CmpSize(const char* compare) const// 문자열 크기 비교 (사전 순)
-{
-	for (int i = 0; i < len; ++i)
-	{
-		if (data[i] < compare[i])
-		{
-			return -1;
-		}
-		if (data[i] > compare[i])				// include (len > cplen)
-		{
-			return 1;							// bc \0: always minimum
-		}
-	}
-	int cplen = GetStrLen(compare);
-	if (len == cplen)
-	{
-		return 0;
-	}
-	return -1;
-}
 
 void MyString::Concat(const MyString& str)			// Concatenation
 {
@@ -229,6 +125,12 @@ void MyString::Concat(const MyString& str)			// Concatenation
 	{
 		delete[] temp;
 	}
+}
+
+void MyString::Concat(const char* str)
+{
+	MyString temp(str);
+	Concat(temp);
 }
 
 int MyString::GetSubstr(int find_from, const MyString& substr) const// 문자열 내 포함된 문자열 반환
@@ -260,7 +162,23 @@ int MyString::GetSubstr(int find_from, const MyString& substr) const// 문자열
 	}
 	return -1;
 }
-// MyString은 null문자가 없으므로 로직이 다름
+
+int MyString::GetSubstr(int find_from, const char* substr) const
+{
+	MyString temp(substr);
+	return GetSubstr(find_from, temp);
+}
+
+int MyString::GetSubstr(const MyString& substr) const
+{
+	return GetSubstr(0, substr);
+}
+
+int MyString::GetSubstr(const char* substr) const
+{
+	return GetSubstr(0, substr);
+}
+
 bool MyString::IsEqual(const MyString& compare) const// 문자열 같은지 비교
 {
 	if (compare.GetLen() != len)
@@ -276,6 +194,13 @@ bool MyString::IsEqual(const MyString& compare) const// 문자열 같은지 비�
 	}
 	return true;
 }
+
+bool MyString::IsEqual(const char* compare) const
+{
+	MyString temp(compare);
+	return IsEqual(temp);
+}
+
 
 int MyString::CmpSize(const MyString& compare) const// 문자열 크기 비교 (사전 순)
 {
@@ -296,6 +221,12 @@ int MyString::CmpSize(const MyString& compare) const// 문자열 크기 비교 (
 		return 0;
 	}
 	return -1;
+}
+
+int MyString::CmpSize(const char* compare) const
+{
+	MyString temp(compare);
+	return CmpSize(temp);
 }
 
 void MyString::PrintStr() const
@@ -494,9 +425,9 @@ int main(void)
 	s2.PrintStr();
 	printf("GetLength: %d \n", s2.GetLen());
 	// 비정상: nullptr // abcdef // 6
-	s2.Concat(nullptr);
-	s2.PrintStr();
-	printf("GetLength: %d \n", s2.GetLen());
+	//s2.Concat(nullptr);
+	//s2.PrintStr();
+	//printf("GetLength: %d \n", s2.GetLen());
 	// aabcdef // 7
 	s0.Concat(s2);
 	s0.PrintStr();
@@ -520,16 +451,16 @@ int main(void)
 	s1.PrintStr(idxSubstr);
 	printf("substridx: %d\n", idxSubstr);
 	// s1 ⊂ s2 // abcdef // 0
-	//idxSubstr = s2.GetSubstr(s1);
+	idxSubstr = s2.GetSubstr(s1);
 	s2.PrintStr(idxSubstr);
 	printf("substridx: %d\n", idxSubstr);
 	// s1 ⊂ s0 // abcdef // 1
-	//idxSubstr = s0.GetSubstr(s1);
+	idxSubstr = s0.GetSubstr(s1);
 	s0.PrintStr(idxSubstr);
 	printf("substridx: %d\n", idxSubstr);
 	// NULL ⊂ s0 // -1
 	// 이슈: len을 반환하게 하면 공집합도 집합의 부분집합임을 표현할 수 있는가?
-	//idxSubstr = s0.GetSubstr(nullstr);
+	idxSubstr = s0.GetSubstr(nullstr);
 	s0.PrintStr(idxSubstr);
 	printf("substridx: %d\n", idxSubstr);
 	printf("*********************************\n");
