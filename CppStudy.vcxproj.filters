@@ -27,5 +27,8 @@
     <ClCompile Include="5_5_StringClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="5_5_StringClass_Improved.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
