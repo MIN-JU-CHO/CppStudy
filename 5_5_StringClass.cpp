@@ -46,8 +46,9 @@ public:
 
 	int GetCapacity() const;				// 할당된 메모리 크기
 	void Reserve(int size);					// 메모리 크기 재할당
-	MyString& Assign(const char* origin);	// 대입
-	MyString& Assign(MyString& origin);		// void로 구현해도 잘됨
+	
+	MyString& Assign(MyString& origin);		// 대입
+	MyString& Assign(const char* origin);	// void로 구현해도 잘됨
 
 	MyString& Insert(int loc, const MyString& str);	// 삽입
 	MyString& Insert(int loc, const char* str);
@@ -284,23 +285,7 @@ void MyString::Reserve(int size)					// 메모리 크기 재할당
 	}
 }
 
-MyString& MyString::Assign(const char* origin)		// 대입
-{
-	len = GetStrLen(origin);
-	if (mem_capacity < len)
-	{
-		mem_capacity = len;
-		delete[] data;
-		data = new char[mem_capacity];
-	}
-	for (int i = 0; i < len; ++i)
-	{
-		data[i] = origin[i];
-	}
-	return *this;
-}
-
-MyString& MyString::Assign(MyString& origin)
+MyString& MyString::Assign(MyString& origin)		// 대입
 {
 	len = origin.GetLen();
 	if (mem_capacity < len)
@@ -315,6 +300,14 @@ MyString& MyString::Assign(MyString& origin)
 	}
 	return *this;
 }
+
+MyString& MyString::Assign(const char* origin)
+{
+	MyString temp(origin);
+	return Assign(temp);
+}
+
+
 
 MyString& MyString::Insert(int loc, const MyString& str)
 {
