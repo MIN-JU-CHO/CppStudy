@@ -15,6 +15,7 @@ class MyString
 {
 	int len = 0;
 	char* data = nullptr;
+	int mem_capacity = 0;
 
 public:
 	MyString();
@@ -36,20 +37,31 @@ public:
 
 	void PrintStr() const;					// print
 	void PrintStr(int idx) const;			// print from idx
+	char At(int idx) const;					// 범위 내의 문자 반환
+
+	int GetCapacity() const;				// 할당된 메모리 크기
+	void Reserve(int size);					// 메모리 크기 재할당
+	MyString& Assign(const char* origin);	// 대입
+	MyString& Assign(MyString& origin);		// void로 구현해도 잘됨
+
+	MyString& Insert(int loc, const MyString& str);	// 삽입
+	MyString& Insert(int loc, const char* str);
+	MyString& Insert(int loc, char c);
+	MyString& Erase(int loc, int num);
 };
 
-MyString::MyString() : len(0), data(nullptr) {}
+MyString::MyString() : len(0), data(nullptr), mem_capacity(0) {}
 
 MyString::MyString(char c)						// 문자로 문자열 생성
 {
-	len = 1;
-	data = new char[len];	
+	mem_capacity = len = 1;
+	data = new char[1];
 	data[0] = c;
 }
 
 MyString::MyString(const char* origin)			// C 문자열로 문자열 생성
 {
-	len = GetStrLen(origin);
+	mem_capacity = len = GetStrLen(origin);
 	data = new char[len];
 	for (int i = 0;i < len; ++i)
 	{
@@ -59,7 +71,12 @@ MyString::MyString(const char* origin)			// C 문자열로 문자열 생성
 MyString::MyString(const MyString& origin)		// 복사 생성
 {
 	len = origin.GetLen();
-	data = new char[len];
+	mem_capacity = origin.GetCapacity();
+	if (mem_capacity < len)
+	{
+		mem_capacity = len;
+	}
+	data = new char[mem_capacity];
 	for (int i = 0; i < len; ++i)
 	{
 		data[i] = origin.data[i];
@@ -92,8 +109,9 @@ void MyString::Concat(const char* str)			// Concatenation
 		return;
 	}
 	int addlen = GetStrLen(str);
+	mem_capacity = len + addlen;
 	char* temp = data;
-	data = new char[len + addlen];
+	data = new char[mem_capacity];
 	for (int i = 0; i < len; ++i)
 	{
 		data[i] = temp[i];
@@ -195,8 +213,9 @@ void MyString::Concat(const MyString& str)			// Concatenation
 	{
 		return;
 	}
+	mem_capacity = len + addlen;
 	char* temp = data;
-	data = new char[len + addlen];
+	data = new char[mem_capacity];
 	for (int i = 0; i < len; ++i)
 	{
 		data[i] = temp[i];
@@ -305,6 +324,145 @@ void MyString::PrintStr(int idx) const
 		printf("%c", data[i]);
 	}
 	printf("\n");
+}
+
+char MyString::At(int idx) const					// 범위 내의 문자 반환
+{
+	if (idx < 0 || idx >= len)
+	{
+		return NULL;
+	}
+	return data[idx];
+}
+
+int MyString::GetCapacity() const				// 할당된 메모리 크기
+{
+	return mem_capacity;
+}
+
+void MyString::Reserve(int size)					// 메모리 크기 재할당
+{
+	if (size <= mem_capacity)
+	{
+		return;
+	}
+	mem_capacity = size;
+	char* temp = data;
+	data = new char[mem_capacity];
+	for (int i = 0; i < len; ++i)
+	{
+		data[i] = temp[i];
+	}
+	if (temp)
+	{
+		delete[] temp;
+	}
+}
+
+MyString& MyString::Assign(const char* origin)		// 대입
+{
+	len = GetStrLen(origin);
+	if (mem_capacity < len)
+	{
+		mem_capacity = len;
+		delete[] data;
+		data = new char[mem_capacity];
+	}
+	for (int i = 0; i < len; ++i)
+	{
+		data[i] = origin[i];
+	}
+	return *this;
+}
+
+MyString& MyString::Assign(MyString& origin)
+{
+	len = origin.GetLen();
+	if (mem_capacity < len)
+	{
+		mem_capacity = len;
+		delete[] data;
+		data = new char[mem_capacity];
+	}
+	for (int i = 0; i < len; ++i)
+	{
+		data[i] = origin.data[i];
+	}
+	return *this;
+}
+
+MyString& MyString::Insert(int loc, const MyString& str)
+{
+	if (loc < 0 || loc >= len)
+	{
+		return *this;
+	}
+	int strgetlen = str.GetLen();
+	if (len + strgetlen > mem_capacity)
+	{
+		if (mem_capacity * 2 > len + strgetlen)
+		{
+			mem_capacity *= 2;
+		}
+		else
+		{
+			mem_capacity = len + strgetlen;
+		}
+		char* temp = data;
+		data = new char[mem_capacity];
+		int i = 0;
+		for (; i < loc; ++i)
+		{
+			data[i] = temp[i];
+		}
+		for (int j = 0; j < strgetlen; ++j)
+		{
+			data[i + j] = str.data[j];
+		}
+		for (; i < len; ++i)
+		{
+			data[strgetlen + i] = temp[i];
+		}
+		delete[] temp;
+		len += strgetlen;
+		return *this;
+	}
+	// update 이전 값 소실 방지를 위해 뒤부터
+	for (int i = len - 1; i >= loc; --i)
+	{
+		data[strgetlen + i] = data[i];
+	}
+	for (int i = 0; i < strgetlen; ++i)
+	{
+		data[loc + i] = str.data[i];
+	}
+	len += strgetlen;
+	return *this;
+}
+MyString& MyString::Insert(int loc, const char* str)
+{
+	MyString temp(str);
+	return Insert(loc, temp);
+}
+
+MyString& MyString::Insert(int loc, char c)
+{
+	MyString temp(c);
+	return Insert(loc, temp);
+}
+
+MyString& MyString::Erase(int loc, int num)
+{
+	if (loc < 0 || loc >= len || num < 0 || loc + num - 1 >= len)
+	{
+		return *this;
+	}
+	for (int i = 0;loc + num + i < len; ++i)
+	{
+		data[loc + i] = data[loc + num + i];
+	}
+	len -= num;
+	return *this;
 }
 
 int main(void)
@@ -425,4 +583,42 @@ int main(void)
 	printf("%d\n", nullstr.CmpSize(s1));
 	printf("%d\n", nullstr.CmpSize(nullstr));
 	printf("*********************************\n");
+
+	MyString str1("very very very long string");
+	str1.Reserve(30);
+	printf("Capacity: %d\tLength: %d\n", str1.GetCapacity(), str1.GetLen());
+	str1.PrintStr();
+	MyString str2 = MyString();
+	printf("Capacity: %d\tLength: %d\n", str2.GetCapacity(), str2.GetLen());
+	str2.PrintStr();
+	str2.Assign(str1);
+	printf("Capacity: %d\tLength: %d\n", str2.GetCapacity(), str2.GetLen());
+	str2.PrintStr();
+	str1.Assign("");
+	printf("Capacity: %d\tLength: %d\n", str1.GetCapacity(), str1.GetLen());
+	str1.PrintStr();
+	str1.Assign(str2);
+	printf("Capacity: %d\tLength: %d\n", str1.GetCapacity(), str1.GetLen());
+	str1.PrintStr();
+	printf("*********************************\n");
+
+	s1.PrintStr();
+	printf("Capacity: %d\tLength: %d\n", s1.GetCapacity(), s1.GetLen());
+	s2.PrintStr();
+	printf("Capacity: %d\tLength: %d\n", s2.GetCapacity(), s2.GetLen());
+	printf("%c\n",s1.At(2));
+	s1.Insert(2, s2).PrintStr();
+	printf("Capacity: %d\tLength: %d\n", s1.GetCapacity(), s1.GetLen());
+	printf("%c\n", s2.At(2));
+	s2.Insert(2, "a");
+	s2.PrintStr();
+	printf("Capacity: %d\tLength: %d\n", s2.GetCapacity(), s2.GetLen());
+	s2.Insert(2, 'A');
+	s2.PrintStr();
+	printf("Capacity: %d\tLength: %d\n", s2.GetCapacity(), s2.GetLen());
+	printf("*********************************\n");
+
+	s1.PrintStr();
+	s1.Erase(2, 6).PrintStr();
+	printf("Capacity: %d\tLength: %d\n", s1.GetCapacity(), s1.GetLen());
 }
