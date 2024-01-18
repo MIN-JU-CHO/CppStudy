@@ -31,7 +31,7 @@ public:
 	int CmpSize(const char* compare) const;	// 문자열 크기 비교 (사전 순)
 
 	void Concat(const MyString& str);			// Concatenation
-	int GetSubstr(const MyString& substr) const;// 문자열 내 포함된 문자열 반환
+	int GetSubstr(int find_from, const MyString& substr) const;// 문자열 내 포함된 문자열 반환
 	bool IsEqual(const MyString& compare) const;// 문자열 같은지 비교
 	int CmpSize(const MyString& compare) const;	// 문자열 크기 비교 (사전 순)
 
@@ -231,37 +231,31 @@ void MyString::Concat(const MyString& str)			// Concatenation
 	}
 }
 
-int MyString::GetSubstr(const MyString& substr) const// 문자열 내 포함된 문자열 반환
+int MyString::GetSubstr(int find_from, const MyString& substr) const// 문자열 내 포함된 문자열 반환
 {
 	int substrlen = substr.GetLen();
-	if (substrlen == 0)
+	if (substrlen == 0 || find_from < 0 || find_from >= len)
 	{
 		return -1;
 	}
 	int psubstr = -1;
-	for (int i = 0; i < len; ++i)
+	for (int i = find_from; i + substrlen - 1 < len; ++i)
 	{
 		if (data[i] != substr.data[0])
 		{
 			continue;
 		}
-		psubstr = i;
-		for (int j = 0; j < substrlen; ++j)
+		int j = 0;
+		for (; j < substrlen; ++j)
 		{
-			if (i + j >= len)
-			{
-				return -1;
-			}
-
 			if (data[i + j] != substr.data[j])
 			{
-				psubstr = -1;
 				break;
 			}
 		}
-		if (psubstr != -1)
+		if (j == substrlen)
 		{
-			return psubstr;
+			return i;
 		}
 	}
 	return -1;
@@ -526,16 +520,16 @@ int main(void)
 	s1.PrintStr(idxSubstr);
 	printf("substridx: %d\n", idxSubstr);
 	// s1 ⊂ s2 // abcdef // 0
-	idxSubstr = s2.GetSubstr(s1);
+	//idxSubstr = s2.GetSubstr(s1);
 	s2.PrintStr(idxSubstr);
 	printf("substridx: %d\n", idxSubstr);
 	// s1 ⊂ s0 // abcdef // 1
-	idxSubstr = s0.GetSubstr(s1);
+	//idxSubstr = s0.GetSubstr(s1);
 	s0.PrintStr(idxSubstr);
 	printf("substridx: %d\n", idxSubstr);
 	// NULL ⊂ s0 // -1
 	// 이슈: len을 반환하게 하면 공집합도 집합의 부분집합임을 표현할 수 있는가?
-	idxSubstr = s0.GetSubstr(nullstr);
+	//idxSubstr = s0.GetSubstr(nullstr);
 	s0.PrintStr(idxSubstr);
 	printf("substridx: %d\n", idxSubstr);
 	printf("*********************************\n");
@@ -621,4 +615,8 @@ int main(void)
 	s1.PrintStr();
 	s1.Erase(2, 6).PrintStr();
 	printf("Capacity: %d\tLength: %d\n", s1.GetCapacity(), s1.GetLen());
+
+	MyString te("abcabcd");
+	MyString tee("bcd");
+	printf("%d\n", te.GetSubstr(0, tee));
 }
