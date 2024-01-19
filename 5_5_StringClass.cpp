@@ -205,29 +205,57 @@ bool MyString::IsEqual(const char* compare) const
 
 int MyString::CmpSize(const MyString& compare) const// 문자열 크기 비교 (사전 순)
 {
-	for (int i = 0; i < len; ++i)
+	int cplen = compare.GetLen();
+	int minlen;
+	if (cplen < len)
+	{
+		minlen = cplen;
+	}
+	else
+	{
+		minlen = len;
+	}
+	for (int i = 0; i < minlen; ++i)
 	{
 		if (data[i] < compare.data[i])
 		{
 			return -1;
 		}
-		if (data[i] > compare.data[i])				// include (len > cplen)
+		if (data[i] > compare.data[i])
+		{
+			return 1;
+		}
+	}
+	if (len == cplen)
+	{
+		return 0;
+	}
+	else if (len < cplen)
+	{
+		return -1;
+	}
+	return 1;
+}
+
+int MyString::CmpSize(const char* compare) const
+{
+	for (int i = 0; i < len; ++i)
+	{
+		if (data[i] < compare[i])
+		{
+			return -1;
+		}
+		if (data[i] > compare[i])				// include (len > cplen)
 		{
 			return 1;								// bc \0: always minimum
 		}
 	}
-	int cplen = compare.GetLen();
+	int cplen = GetStrLen(compare);
 	if (len == cplen)
 	{
 		return 0;
 	}
 	return -1;
-}
-
-int MyString::CmpSize(const char* compare) const
-{
-	MyString temp(compare);
-	return CmpSize(temp);
 }
 
 void MyString::PrintStr() const
