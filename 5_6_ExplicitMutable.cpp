@@ -11,7 +11,7 @@ public:
 	MyString();
 	explicit MyString(int size);
 	MyString(const char* origin);
-	MyString(MyString& origin);
+	MyString(const MyString& origin);
 
 	~MyString();
 
