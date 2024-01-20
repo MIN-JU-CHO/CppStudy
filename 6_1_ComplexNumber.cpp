@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <ctype.h>
+#include <iostream>
 int GetLen(const char* str)
 {
 	int i = -1;
@@ -34,8 +35,10 @@ public:
 	//Complex operator/(const char* str);	// 문자열 -> 복소수 생성자, operator/ 사용
 	Complex(const char* str);	// 문자열 -> 복소수 생성자
 	
-
 	void Print() const;
+
+	friend Complex operator+(const Complex& p1, const Complex& p2);
+	friend std::ostream& operator<<(std::ostream& os, const Complex& c);
 };
 
 Complex Complex::Plus(double preal, double pimg) const
@@ -217,6 +220,31 @@ void Complex::Print() const
 	printf("(%f, %f)\n", real, img);
 }
 
+// 전역 함수
+Complex operator+(const Complex& p1, const Complex& p2)
+{
+	// 객체 총 2번 생성 ( O )
+	// Complex temp(p1);
+	// return temp.operator+(p2);
+	
+	// 무한 재귀 호출 (operator+(p1, p2)) ( X )
+	// return p1 + p2;
+	
+	// p1 is Read-Only (const) ( X )
+	// return p1.operator+(p2);
+	// 따라서 const 객체의 멤버 함수 호출 시, const 함수만 호출할 수 있다.
+	
+	// friend 선언 시 접근 가능, 객체 총 1번 생성 ( O )
+	Complex temp(p1.real + p2.real, p1.img + p2.img);
+	return temp;
+}
+
+std::ostream& operator<<(std::ostream& os, const Complex& c)
+{
+	os << "(" << c.real << ", " << c.img << ")" ;
+	return os;
+}
+
 int main(void)
 {
 	Complex a(1, 2);
@@ -246,4 +274,12 @@ int main(void)
 	a.Print();
 	a = a / "-12+i55";
 	a.Print();
+	printf("\n");
+
+	a = Complex(0, 0);
+	a.Print();
+	a = "-1.1 + i3.923" + a;
+	a.Print();
+	a = "-1.1 + i3.923" + a;
+	std::cout << "value of a: " << a << std::endl;
 }
