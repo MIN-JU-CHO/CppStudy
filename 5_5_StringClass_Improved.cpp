@@ -2,11 +2,8 @@
 
 int GetStrLen(const char* str)				// C 문자열 길이 반환
 {
-	int len = 0;
-	while (str[len] != '\0')
-	{
-		++len;
-	}
+	int len = -1;
+	while (str[++len] != '\0') {}
 	return len;
 }
 
