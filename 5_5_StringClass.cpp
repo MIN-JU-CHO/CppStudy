@@ -3,11 +3,8 @@
 // 비 멤버 함수이므로 const 반환 불가능
 int GetStrLen(const char* str)				// C 문자열 길이 반환
 {
-	int len = 0;
-	while (str[len] != '\0')
-	{
-		++len;
-	}
+	int len = -1;
+	while (str[++len] != '\0') {}
 	return len;
 }
 
@@ -47,13 +44,19 @@ public:
 	int GetCapacity() const;				// 할당된 메모리 크기
 	void Reserve(int size);					// 메모리 크기 재할당
 	
-	MyString& Assign(MyString& origin);		// 대입
+	MyString& Assign(const MyString& origin);		// 대입
 	MyString& Assign(const char* origin);	// void로 구현해도 잘됨
 
 	MyString& Insert(int loc, const MyString& str);	// 삽입
 	MyString& Insert(int loc, const char* str);
 	MyString& Insert(int loc, char c);
 	MyString& Erase(int loc, int num);
+
+	MyString operator+(const MyString& str);
+	bool operator==(const MyString& str) const;
+	char& operator[](const int idx) const;
+	MyString& operator=(const MyString& str);
+	MyString& operator=(const char c);
 };
 
 MyString::MyString() : len(0), data(nullptr), mem_capacity(0) {}
@@ -313,7 +316,7 @@ void MyString::Reserve(int size)					// 메모리 크기 재할당
 	}
 }
 
-MyString& MyString::Assign(MyString& origin)		// 대입
+MyString& MyString::Assign(const MyString& origin)		// 대입
 {
 	len = origin.GetLen();
 	if (mem_capacity < len)
@@ -408,6 +411,39 @@ MyString& MyString::Erase(int loc, int num)
 		data[loc + i] = data[loc + num + i];
 	}
 	len -= num;
+	return *this;
+}
+
+MyString MyString::operator+(const MyString& str)
+{
+	Concat(str);
+	return *this;
+}
+bool MyString::operator==(const MyString& str) const
+{
+	return IsEqual(str);
+}
+// 해당 위치의 문자 참조를 반환 -> 해당 문자 접근&수정 가능
+char& MyString::operator[](const int idx) const
+{
+	if (idx < 0 || idx >= len)
+	{
+		static char empty = '\0';
+		return empty;
+	}
+	return data[idx];
+}
+
+MyString& MyString::operator=(const MyString& str)
+{
+	Assign(str);
+	return *this;
+}
+
+MyString& MyString::operator=(const char c)
+{
+	MyString temp(c);
+	*this = temp;
 	return *this;
 }
 
@@ -571,4 +607,13 @@ int main(void)
 	MyString te("abcabcd");
 	MyString tee("bcd");
 	printf("%d\n", te.GetSubstr(0, tee));
+	printf("*********************************\n");
+
+	MyString test1("xxxxxxx"), test2("Taeyeon"), test3("xxxxxxx");
+	printf("%d\n", test1 == test2);
+	printf("%d\n", test1 == test3);
+	test3 = test3 + test1;
+	test3.PrintStr();
+	test1[1] = 'T';
+	test1.PrintStr();
 }
