@@ -93,7 +93,7 @@ namespace MyArray
 			}
 			if (levelp1 == array->dim)
 			{
-				data = static_cast<void*>((static_cast<int*>(static_cast<Array::Address*>(data)->next) + idx));
+				data = static_cast<void*>(static_cast<int*>(static_cast<Array::Address*>(data)->next) + idx);
 			}
 			else
 			{
@@ -101,7 +101,7 @@ namespace MyArray
 			}
 		}
 		Int(const Int& i) : data(i.data), levelp1(i.levelp1), array(i.array) {}
-		Int& operator=(const int& a)
+		Int& operator=(const int& a)						// 3
 		{
 			if (data)	// assign real int value
 			{
@@ -109,7 +109,7 @@ namespace MyArray
 			}
 			return *this;
 		}
-		Int operator[](const int idx)
+		Int operator[](const int idx)						// 2
 		{
 			if (!data)	// if prev idx out of range
 			{
@@ -117,7 +117,7 @@ namespace MyArray
 			}
 			return Int(idx, levelp1 + 1, data, array);
 		}
-		operator int()
+		operator int()										// 4
 		{
 			if (data)
 			{
@@ -126,7 +126,7 @@ namespace MyArray
 			return 0;
 		}
 	};
-	Int Array::operator[](const int idx)
+	Int Array::operator[](const int idx)					// 1
 	{
 		return Int(idx, 1, static_cast<void*>(top), this);
 	}
@@ -141,9 +141,9 @@ int main(void)
 		for (int j = 0; j < 3; ++j)
 		{
 			for (int k = 0; k < 4; ++k)
-			{
+			{	// (((arr.operator[](i)).operator[](j)).operator[](k)).operator=((i+1)*(j+1)*(k+1))
 				arr[i][j][k] = (i + 1) * (j + 1) * (k + 1);
-			}
+			}	// 1 -> 2 -> 2 -> 3
 		}
 	}
 	for (int i = 0; i < 2; ++i)
@@ -151,9 +151,9 @@ int main(void)
 		for (int j = 0; j < 3; ++j)
 		{
 			for (int k = 0; k < 4; ++k)
-			{
+			{	// (((arr.operator[](i)).operator[](j)).operator[](k)).operator int()
 				std::cout << "[" << i << "]" << "[" << j << "]" << "[" << k << "]: " << arr[i][j][k] << std::endl;
-			}
+			}	// 1 -> 2 -> 2 -> 4
 		}
 	}
 }
