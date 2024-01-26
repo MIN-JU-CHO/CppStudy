@@ -19,6 +19,91 @@ namespace MyArray
 		};
 		Address* top;
 	public:
+		class Iterator
+		{
+			friend Int;
+
+			int* location;
+			Array* arr;
+		public:
+			Iterator(Array* _arr, int* loc = NULL) : arr(_arr)
+			{
+				location = new int[arr->dim];
+				for (int i = 0; i < arr->dim; ++i)
+				{
+					location[i] = loc != NULL ? loc[i] : 0;
+				}
+			}
+			Iterator(const Iterator& iter) : arr(iter.arr)
+			{
+				location = new int[arr->dim];
+				for (int i = 0; i < arr->dim; ++i)
+				{
+					location[i] = iter.location[i];
+				}
+			}
+			~Iterator()
+			{
+				delete[] location;
+			}
+			Iterator& operator++()
+			{
+				if (location[0] >= arr->size[0])
+				{
+					return (*this);
+				}
+				bool carry = false;
+				int i = arr->dim - 1;
+				do
+				{
+					++location[i];
+					if (location[i] >= arr->size[i] && i >= 1)
+					{
+						carry = true;
+						location[i] -= arr->size[i];
+						--i;
+					}
+					else
+					{
+						carry = false;
+					}
+				} while (carry && i >= 0);
+				return *this;
+			}
+			Iterator operator++(int)
+			{
+				Iterator temp(*this);
+				this->operator++();
+				return temp;
+			}
+			Iterator& operator=(const Iterator& iter)
+			{
+				arr = iter.arr;
+				location = new int[arr->dim];
+				for (int i = 0; i < arr->dim; ++i)
+				{
+					location[i] = iter.location[i];
+				}
+				return *this;
+			}
+			bool operator!=(const Iterator& iter)
+			{
+				if (arr->dim != iter.arr->dim)
+				{
+					return true;
+				}
+				for (int i = 0; i < arr->dim; ++i)
+				{
+					if (location[i] != iter.location[i])
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+			Int operator*();
+		};
+		friend Iterator;
 		Array(int _dim, int* array_size) : dim(_dim)
 		{
 			size = new int[_dim];
@@ -69,8 +154,13 @@ namespace MyArray
 			{
 				delete_address(static_cast<Address*>(cur->next) + i);
 			}
-			// can delete new int[], new Address[]
-			delete[] cur->next;
+			// delete real at Last Level
+			if (cur->level == dim - 1)
+			{
+				delete[] static_cast<int*>(cur->next);
+				return;
+			}
+			delete[] static_cast<Address*>(cur->next);
 		}
 		~Array()
 		{
@@ -78,6 +168,30 @@ namespace MyArray
 			delete[] size;
 		}
 		Int operator[](const int idx);
+
+		Iterator begin()
+		{
+			int* loc = new int[dim];
+			for (int i = 0; i < dim; ++i)
+			{
+				loc[i] = 0;
+			}
+			Iterator temp(this, loc);
+			delete[] loc;
+			return temp;
+		}
+		Iterator end()
+		{
+			int* loc = new int[dim];
+			loc[0] = size[0];
+			for (int i = 1; i < dim; ++i)
+			{
+				loc[i] = 0;
+			}
+			Iterator temp(this, loc);
+			delete[] loc;
+			return temp;
+		}
 	};
 	class Int
 	{
@@ -130,11 +244,31 @@ namespace MyArray
 	{
 		return Int(idx, 1, static_cast<void*>(top), this);
 	}
+	Int Array::Iterator::operator*()
+	{
+		Int start = arr->operator[](location[0]);
+		for (int i = 1; i < arr->dim; ++i)
+		{
+			start = start.operator[](location[i]);
+		}
+		return start;
+	}
 }
 int main(void)
 {
 	int size[] = { 2,3,4 };
 	MyArray::Array arr(3, size);
+
+	MyArray::Array::Iterator iter = arr.begin();
+	for (int i = 0; iter != arr.end(); ++i, iter++)
+	{
+		(*iter) = i;
+	}
+	for (iter = arr.begin(); iter != arr.end(); ++iter)
+	{
+		std::cout << (*iter) << std::endl;
+	}
+	std::cout << std::endl;
 
 	for (int i = 0; i < 2; ++i)
 	{
@@ -142,7 +276,7 @@ int main(void)
 		{
 			for (int k = 0; k < 4; ++k)
 			{	// (((arr.operator[](i)).operator[](j)).operator[](k)).operator=((i+1)*(j+1)*(k+1))
-				arr[i][j][k] = (i + 1) * (j + 1) * (k + 1);
+				arr[i][j][k] = (i + 1) * (j + 1) * (k + 1) + arr[i][j][k];
 			}	// 1 -> 2 -> 2 -> 3
 		}
 	}
