@@ -54,5 +54,17 @@
     <ClCompile Include="11_1_TestIterator.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="11_1_DequeClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="11_2_TestSetContainer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="11_2_TestMapContainer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="11_2_TestHashContainer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
