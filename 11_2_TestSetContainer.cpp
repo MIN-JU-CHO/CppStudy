@@ -45,7 +45,7 @@ public:
 	friend std::ostream& operator<< (std::ostream& o, const Todo& td);
 };
 struct TodoCmp
-{// 왜 ()연산자 일까?
+{// Functor
 	bool operator()(const Todo& a, const Todo& b) const
 	{
 		if (a.priority == b.priority)
