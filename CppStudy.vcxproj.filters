@@ -72,5 +72,8 @@
     <ClCompile Include="11_3_TestStableSort.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="7_2_DynamicBinding.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
