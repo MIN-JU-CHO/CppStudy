@@ -75,7 +75,10 @@
     <ClCompile Include="7_2_DynamicBinding.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="111.cpp">
+    <ClCompile Include="7_3_TestUpCasting.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="10_1_VectorClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
