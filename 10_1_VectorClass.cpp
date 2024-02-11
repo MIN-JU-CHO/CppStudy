@@ -399,3 +399,30 @@ int main(void)
 	}
 }
 
+template <typename Cont>
+void quick_sort(Cont& cont, int st, int en)
+{
+	if (en <= st + 1)
+	{
+		return;
+	}
+	auto pivot = cont[st];
+	int left = st + 1, right = en - 1;
+	while (true)
+	{
+		while (left <= right && cont[left] <= pivot)
+		{
+			++left;
+		}
+		while (left <= right && cont[right] >= pivot)
+		{
+			--right;
+		}
+		if (left > right)
+			break;
+		cont.swap(left, right);
+	}
+	cont.swap(st, right);
+	quick_sort(cont, st, right);
+	quick_sort(cont, right + 1, en);
+}
