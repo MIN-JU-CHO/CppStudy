@@ -101,6 +101,13 @@ public:
 	{
 		return capacity;
 	}
+	// swap
+	void swap(int i, int j)
+	{
+		T temp = data[i];
+		data[i] = data[j];
+		data[j] = temp;
+	}
 };
 
 template<>
@@ -177,7 +184,7 @@ public:
 	{
 		return (data[idx / 32] & (1 << (idx % 32))) != 0;
 	}
-	// at
+	// at (incomplete)
 	void* at(int idx)
 	{
 		if (idx < 0 || idx >= length)
@@ -249,9 +256,36 @@ public:
 	{
 		return capacity;
 	}
+	// swap
+	void swap(int i, int j)
+	{
+		bool temp = operator[](j);
+		if (operator[](i))
+		{
+			data[j / 32] |= (1 << (j % 32));
+		}
+		else
+		{
+			unsigned int all_one_except_i = 0xFFFFFFFF;
+			all_one_except_i ^= (1 << (i % 32));
+			data[j / 32] &= all_one_except_i;
+		}
+		if (temp)
+		{
+			data[i / 32] |= (1 << (i % 32));
+		}
+		else
+		{
+			unsigned int all_one_except_j = 0xFFFFFFFF;
+			all_one_except_j ^= (1 << (i % 32));
+			data[i / 32] &= all_one_except_j;
+		}
+	}
 };
 
 using namespace std;
+template <typename Cont>
+void quick_sort(Cont& cont, int st, int en);
 int main(void)
 {
 	Vector<int> int_vec(2, 0);
@@ -332,4 +366,36 @@ int main(void)
 	{
 		cout << bool_vec[i];
 	}
+	cout << "\n";
+	// 11101101010101
+	bool_vec.swap(3, 4);
+	for (int i = 0; i < bool_vec.size(); ++i)
+	{
+		cout << bool_vec[i];
+	}
+	cout << "\n" << "\n";
+
+	Vector<int> int_vec2;
+	int_vec2.push_back(3);
+	cout << "alloc_size: " << int_vec2.alloc_size() << "\n";
+	int_vec2.push_back(1);
+	cout << "alloc_size: " << int_vec2.alloc_size() << "\n";
+	int_vec2.push_back(2);
+	cout << "alloc_size: " << int_vec2.alloc_size() << "\n";
+	int_vec2.push_back(8);
+	int_vec2.push_back(5);
+	cout << "alloc_size: " << int_vec2.alloc_size() << "\n";
+	int_vec2.push_back(3);
+	cout << "before sort" << "\n";
+	for (int i = 0; i < int_vec2.size(); ++i)
+	{
+		cout << i << ": " << int_vec2[i] << "\n";
+	}
+	cout << "after sort" << "\n";
+	quick_sort(int_vec2, 0, int_vec2.size());
+	for (int i = 0; i < int_vec2.size(); ++i)
+	{
+		cout << i << ": " << int_vec2[i] << "\n";
+	}
 }
+
