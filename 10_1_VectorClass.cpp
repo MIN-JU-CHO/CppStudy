@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
-// variable length and sequece array (without RandomAccessIterator version)
+#include <algorithm>
+// variable length and sequece array
 template<typename T>
 class Vector
 {
@@ -107,6 +108,107 @@ public:
 		T temp = data[i];
 		data[i] = data[j];
 		data[j] = temp;
+	}
+	class RandomAccessIterator
+	{
+		int location;
+		Vector* vector;
+	public:
+		RandomAccessIterator(Vector* _vector, int _idx) : vector(_vector), location(_idx) {}
+		RandomAccessIterator(const RandomAccessIterator& iter) : vector(iter.vector), location(iter.location) {}
+		RandomAccessIterator& operator++()
+		{
+			++location;
+			return (*this);
+		}
+		RandomAccessIterator& operator--()
+		{
+			--location;
+			return (*this);
+		}
+		RandomAccessIterator operator++(int)
+		{
+			RandomAccessIterator temp(*this);
+			++location;
+			return temp;
+		}
+		RandomAccessIterator& operator=(const RandomAccessIterator& iter)
+		{
+			vector = iter.vector;
+			location = iter.location;
+			return (*this);
+		}
+		bool operator!=(const RandomAccessIterator& iter)
+		{
+			if (vector == iter.vector && location == iter.location)
+			{
+				return false;
+			}
+			return true;
+		}
+		bool operator==(const RandomAccessIterator& iter)
+		{
+			if (vector == iter.vector && location == iter.location)
+			{
+				return true;
+			}
+			return false;
+		}
+		T operator*()
+		{
+			return (*vector).operator[](location);
+		}
+		RandomAccessIterator operator+(int offset)
+		{
+			RandomAccessIterator temp(*this);
+			temp.location += offset;
+			return temp;
+		}
+		RandomAccessIterator operator-(int offset)
+		{
+			RandomAccessIterator temp(*this);
+			temp.location -= offset;
+			return temp;
+		}
+		bool operator<= (const RandomAccessIterator& iter)
+		{
+			if (vector == iter.vector && location <= iter.location)
+			{
+				return true;
+			}
+			return false;
+		}
+		bool operator> (const RandomAccessIterator& iter)
+		{
+			if (vector == iter.vector && location > iter.location)
+			{
+				return true;
+			}
+			return false;
+		}
+		Vector* GetContainer()
+		{
+			return vector;
+		}
+		int GetLocation()
+		{
+			return location;
+		}
+	};
+	RandomAccessIterator begin()
+	{
+		return RandomAccessIterator(this, 0);
+	}
+	RandomAccessIterator end()
+	{
+		return RandomAccessIterator(this, length);
+	}
+	// swap
+	void swap(RandomAccessIterator i, RandomAccessIterator j)
+	{
+		T temp = (*i);
+		data[i.GetLocation()] = (*j);
+		data[j.GetLocation()] = temp;
 	}
 };
 
@@ -286,6 +388,8 @@ public:
 using namespace std;
 template <typename Cont>
 void quick_sort(Cont& cont, int st, int en);
+template <class Iterator>
+void quick_sort(Iterator st, Iterator en);
 int main(void)
 {
 	Vector<int> int_vec(2, 0);
@@ -392,10 +496,16 @@ int main(void)
 		cout << i << ": " << int_vec2[i] << "\n";
 	}
 	cout << "after sort" << "\n";
-	quick_sort(int_vec2, 0, int_vec2.size());
+	//quick_sort(int_vec2, 0, int_vec2.size());
+	quick_sort(int_vec2.begin(), int_vec2.end());
 	for (int i = 0; i < int_vec2.size(); ++i)
 	{
 		cout << i << ": " << int_vec2[i] << "\n";
+	}
+	cout << "\n";
+	for (auto iter = int_vec2.begin(); iter != int_vec2.end(); ++iter)
+	{
+		cout << *iter << " ";
 	}
 }
 
@@ -425,4 +535,32 @@ void quick_sort(Cont& cont, int st, int en)
 	cont.swap(st, right);
 	quick_sort(cont, st, right);
 	quick_sort(cont, right + 1, en);
+}
+// class == typename
+template <class Iterator>
+void quick_sort(Iterator st, Iterator en)
+{
+	if (en <= st + 1)
+	{
+		return;
+	}
+	auto pivot = (*st);
+	auto left = st + 1, right = en - 1;
+	while (true)
+	{
+		while (left <= right && (*left) <= pivot)
+		{
+			++left;
+		}
+		while (left <= right && (*right) >= pivot)
+		{
+			--right;
+		}
+		if (left > right)
+			break;
+		(*st.GetContainer()).swap(left, right);
+	}
+	(*st.GetContainer()).swap(st, right);
+	quick_sort(st, right);
+	quick_sort(right + 1 , en);
 }
