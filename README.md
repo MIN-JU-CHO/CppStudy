@@ -18,7 +18,8 @@
 [[연산자 오버로딩 관련 개념 정리]](https://phrygian-kitten-eda.notion.site/C-CS-7ec928eb101844a399b81414ff94cc15?pvs=4)
 
 [[13-1 이동 생성자 원리 (noexcept)]](https://github.com/MIN-JU-CHO/CppStudy/blob/main/13_1_RValueReference.cpp)
-<img src="https://github.com/MIN-JU-CHO/CppStudy/assets/60171052/e391a6d3-7c01-4de1-8a8f-0c82e17cfb4e.png" width="500" height="500"/>
+
+<img src="https://github.com/MIN-JU-CHO/CppStudy/assets/60171052/e391a6d3-7c01-4de1-8a8f-0c82e17cfb4e.png" width="300" height="300"/>
 > 1. 마지막에 추가되는 벡터의 원소를 먼저 복사 생성한다.
 > 2. 새 벡터 공간에 기존 원소들을 이동 생성한다.
 
