@@ -28,4 +28,4 @@
 
 [[13-2 이동 생성 후 복사 오류 원인]](https://phrygian-kitten-eda.notion.site/48635dea1834494ab45c05ac702f1239?pvs=4)
 
-<img src="https://github.com/MIN-JU-CHO/CppStudy/assets/60171052/6764f9bb-7836-4bd4-95ee-af05adbf0eb6.png" width="800" height="200"/>
+<img src="https://github.com/MIN-JU-CHO/CppStudy/assets/60171052/6764f9bb-7836-4bd4-95ee-af05adbf0eb6.png" width="800" height="150"/>
