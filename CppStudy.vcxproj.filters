@@ -87,5 +87,8 @@
     <ClCompile Include="13_1_RValueReference.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="13_2_Move.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -100,6 +100,7 @@ public:
 	}
 	void Print() const
 	{
+		cout << "id: " << id << '\t';
 		for (int i = 0; i < length; ++i)
 		{
 			cout << data[i];
