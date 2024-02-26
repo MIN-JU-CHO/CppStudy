@@ -62,11 +62,33 @@ double average(Ints... elems)
 	return static_cast<double> (sum_all<T>(elems...)) / sizeof...(elems);
 }
 
+/*
+// After C++ 17 -> FOLD
+template<typename T, typename... Ints>
+T sum_all(Ints... elems)
+{
+	return (... + elems);
+}
+
+template<typename T, typename... Ints>
+double average(Ints... elems)
+{
+	return static_cast<double> (sum_all<T>(elems...)) / sizeof...(elems);
+}
+
+template<typename Int, typename... Ints>
+Int diff_from(Int start, Ints... elems)
+{
+	return (start - ... - elems);
+}
+*/
+
 int main(void)
 {
 	string word = "this";
 	cout << StrConcat(word, " ", "is", " ", "a", " ", "sentence", "\n");
-
-
+	//cout << sum_all<int>(1, 4, 2, 3, 10) << "\n";
+	//cout << average<int>(1, 4, 2, 3, 10) << "\n";
+	//cout << diff_from(100, 1, 4, 2, 3, 10) << "\n";
 	cout << average<int>(1, 4, 2, 3, 10) << "\n";
 }
