@@ -43,8 +43,30 @@ string StrConcat(const String& str, Strings... strs)
 	return result;
 }
 
+// Before C++17
+template<typename T>
+T sum_all()
+{
+	return 0;
+}
+
+template <typename T, typename... Ints>
+T sum_all(T num, Ints... elems)
+{
+	return num + sum_all<T>(elems...);
+}
+
+template<typename T, typename... Ints>
+double average(Ints... elems)
+{
+	return static_cast<double> (sum_all<T>(elems...)) / sizeof...(elems);
+}
+
 int main(void)
 {
 	string word = "this";
 	cout << StrConcat(word, " ", "is", " ", "a", " ", "sentence", "\n");
+
+
+	cout << average<int>(1, 4, 2, 3, 10) << "\n";
 }
