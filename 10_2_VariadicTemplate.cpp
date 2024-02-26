@@ -81,6 +81,21 @@ Int diff_from(Int start, Ints... elems)
 {
 	return (start - ... - elems);
 }
+
+class A
+{
+public:
+	void do_something(int x)
+	{
+		cout << "Do something with " << x << "\n";
+	}
+};
+
+template <typename T, typename... Ints>
+void do_many_things(const T& obj, Ints... nums)
+{
+	(obj.do_something(nums), ...);
+}
 */
 
 int main(void)
@@ -91,4 +106,7 @@ int main(void)
 	//cout << average<int>(1, 4, 2, 3, 10) << "\n";
 	//cout << diff_from(100, 1, 4, 2, 3, 10) << "\n";
 	cout << average<int>(1, 4, 2, 3, 10) << "\n";
+
+	/*A a;
+	do_many_things(a, 1, 3, 2, 4);*/
 }
