@@ -96,5 +96,8 @@
     <ClCompile Include="13_2_PerfectForwarding.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="12_ExceptionInheritance.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
