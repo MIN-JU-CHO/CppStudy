@@ -111,5 +111,8 @@
     <ClCompile Include="10_3_TMPRatio.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Trie.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
