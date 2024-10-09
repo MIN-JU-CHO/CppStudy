@@ -40,7 +40,7 @@ public:
 		--length;
 		return data[length];
 	}
-	// resize
+	// resize (Usually 2 * capacity)
 	void resize(int new_size)
 	{
 		if (new_size < length)
@@ -50,6 +50,7 @@ public:
 		T* temp = data;
 		capacity = new_size;
 		data = new T[capacity];
+		// copy to new allocation
 		for (int i = 0; i < length; ++i)
 		{
 			data[i] = temp[i];
@@ -77,6 +78,7 @@ public:
 		{
 			resize(capacity * 2);
 		}
+		// insert data after copy origin
 		for (int i = length - 1; i >= idx; --i)
 		{
 			data[i + 1] = data[i];
@@ -84,7 +86,7 @@ public:
 		data[idx] = val;
 		++length;
 	}
-	// remove
+	// remove : shift left
 	void remove(int idx)
 	{
 		for (int i = idx + 1; i < length; ++i)
@@ -109,6 +111,7 @@ public:
 		data[i] = data[j];
 		data[j] = temp;
 	}
+	// Vector has a RandomAccessIterator
 	class RandomAccessIterator
 	{
 		int location;
@@ -158,14 +161,23 @@ public:
 		{
 			return (*vector).operator[](location);
 		}
+		// TODO: out of range case
 		RandomAccessIterator operator+(int offset)
 		{
+			/*if(location + offset >= vector->size())
+			{
+				throw std::out_of_range("OUT OF RANGE");
+			}*/
 			RandomAccessIterator temp(*this);
 			temp.location += offset;
 			return temp;
 		}
 		RandomAccessIterator operator-(int offset)
 		{
+			/*if (location - offset < 0)
+			{
+				throw std::out_of_range("OUT OF RANGE");
+			}*/
 			RandomAccessIterator temp(*this);
 			temp.location -= offset;
 			return temp;
@@ -250,6 +262,7 @@ public:
 		{
 			resize(capacity * 2);
 		}
+		// if 1 make as 1 at last position
 		if (elem)
 		{
 			data[length / 32] |= (1 << (length % 32));
@@ -261,7 +274,7 @@ public:
 		--length;
 		return (data[length / 32] & (1 << (length % 32))) != 0;
 	}
-	// resize
+	// resize (Usually 2 * capacity)
 	void resize(int new_size)
 	{
 		if (new_size < length)
@@ -270,10 +283,12 @@ public:
 		}
 		unsigned int* temp = data;
 		data = new unsigned int[new_size];
+		// copy to new allocation
 		for (int i = 0; i < capacity; ++i)
 		{
 			data[i] = temp[i];
 		}
+		// initialize as 0
 		for (int i = capacity; i < new_size; ++i)
 		{
 			data[i] = 0;
@@ -286,7 +301,7 @@ public:
 	{
 		return (data[idx / 32] & (1 << (idx % 32))) != 0;
 	}
-	// at (incomplete)
+	// at (incomplete) - need modify return type as iterator
 	void* at(int idx)
 	{
 		if (idx < 0 || idx >= length)
@@ -304,6 +319,7 @@ public:
 		{
 			resize(capacity * 2);
 		}
+		// start at end ~ idx, shift right
 		for (int i = length - 1; i >= idx; --i)
 		{
 			int nxt = i + 1, cur = i;
@@ -318,6 +334,7 @@ public:
 				data[nxt / 32] &= all_one_except_nxt;
 			}
 		}
+		// save new data
 		if (val)
 		{
 			data[idx / 32] |= (1 << (idx % 32));
@@ -333,6 +350,7 @@ public:
 	// remove
 	void remove(int idx)
 	{
+		// start at idx+1 ~ end, shift left
 		for (int i = idx + 1; i < length; ++i)
 		{
 			int prev = i - 1, cur = i;
@@ -361,6 +379,7 @@ public:
 	// swap
 	void swap(int i, int j)
 	{
+		// save i -> j
 		bool temp = operator[](j);
 		if (operator[](i))
 		{
@@ -372,6 +391,7 @@ public:
 			all_one_except_i ^= (1 << (i % 32));
 			data[j / 32] &= all_one_except_i;
 		}
+		// save j -> i
 		if (temp)
 		{
 			data[i / 32] |= (1 << (i % 32));
@@ -507,6 +527,17 @@ int main(void)
 	{
 		cout << *iter << " ";
 	}
+	cout << "\n";
+
+	// TODO: out of range case
+	/*Vector<int>::RandomAccessIterator iter = int_vec.begin();
+	try {
+		cout << "access out of range iterator: " << *(iter - 1) << "\n";
+	}
+	catch (std::out_of_range& e)
+	{
+		cout << "EXCEPTION: " << e.what() << "\n";
+	}*/
 }
 
 template <typename Cont>
