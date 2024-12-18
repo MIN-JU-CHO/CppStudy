@@ -1,5 +1,5 @@
-// UPDATE 12/12/2024 : ADD MISSED delete (LAST ELEM) FROM pop_back, remove
-// 마지막 원소 삭제 delete 안했던 것 수정
+// UPDATE 18/12/2024 : Modify delete individual element
+// 수정 : 개별 원소 삭제는 정의되지 않은 동작 유발.
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -39,10 +39,7 @@ public:
 	}
 	T pop_back()
 	{
-		// 마지막 원소 삭제 delete 안했던 것 수정
-		T returnValue = data[length - 1];
-		delete data[length-- - 1];
-		return returnValue;
+		return data[--length];
 	}
 	// resize (Usually 2 * capacity)
 	void resize(int new_size)
@@ -97,10 +94,7 @@ public:
 		{
 			data[i - 1] = data[i];
 		}
-		// 마지막 원소 삭제 delete 안했던 것 수정
-		T returnValue = data[length - 1];
-		delete data[length-- - 1];
-		delete returnValue;
+		delete data[--length];
 	}
 	// size
 	int size()
@@ -278,8 +272,6 @@ public:
 	}
 	bool pop_back()
 	{
-		// dont delete just not use becuase of using 4byte
-		// delete 하면 앞의 비트들도 지워지게 되기 때문
 		--length;
 		return (data[length / 32] & (1 << (length % 32))) != 0;
 	}
@@ -374,8 +366,6 @@ public:
 				data[prev / 32] &= all_one_except_prev;
 			}
 		}
-		// dont delete just not use becuase of using 4byte
-		// delete 하면 앞의 비트들도 지워지게 되기 때문
 		--length;
 	}
 	// size
